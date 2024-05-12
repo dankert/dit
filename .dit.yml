@@ -1,0 +1,10 @@
+name: DIT
+description: "Deliver it! A tool for delivering software"
+email: "jan.2024+dit-repo@jandankert.de"
+
+website:
+  directory: "./"
+  engine:
+
+docker:
+  build: true
