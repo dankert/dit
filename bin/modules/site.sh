@@ -25,8 +25,7 @@ function html_header() {
 
   echo "<html><head>"
   echo "<title>${title}</title>"
-  echo "<link rel=\"stylesheet\" href=\"${uppath}_assets/css/bootstrap.min.css\">"
-  echo "<link rel=\"stylesheet\" href=\"${uppath}_assets/css/bootstrap-theme.min.css\">"
+  echo "<link rel=\"stylesheet\" href=\"${uppath}_assets/css/bulma.min.css\">"
   echo "<link rel=\"stylesheet\" href=\"${uppath}_assets//highlight-default.css\">"
   echo "<script src=\"${uppath}_assets/js/jquery-3.1.1.min.js\" defer=\"defer\"></script>"
   echo "<script src=\"${uppath}_assets/js/bootstrap.min.js\" defer=\"defer\"></script>"
