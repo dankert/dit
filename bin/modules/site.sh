@@ -10,32 +10,50 @@ function html_header() {
 
   if [ -n "$1" ]; then
     title=$1
-  else
-    title=$site_index_title
   fi
+
+  if [ -n "$2" ]; then
+    depth=$2
+  else
+    depth=2
+  fi
+
+  uppath=$(for i in $(seq $depth); do echo "../";done)
+  if [[ -z $uppath ]]; then
+    uppath="./"
+  fi
+
   echo "<html><head>"
   echo "<title>${title}</title>"
-  echo "<link rel=\"stylesheet\" href=\"../css/bootstrap.min.css\">"
-  echo "<link rel=\"stylesheet\" href=\"../css/bootstrap-theme.min.css\">"
-  echo "<link rel=\"stylesheet\" href=\"../css/highlight-default.css\">"
-  echo "<script src=\"../js/jquery-3.1.1.min.js\" defer=\"defer\"></script>"
-  echo "<script src=\"../js/bootstrap.min.js\" defer=\"defer\"></script>"
-  echo "<script src=\"../js/highlight.min.js\" defer=\"defer\"></script>"
-  echo "<script src=\"../js/dit.js\" defer=\"defer\"></script>"
+  echo "<link rel=\"stylesheet\" href=\"${uppath}_assets/css/bootstrap.min.css\">"
+  echo "<link rel=\"stylesheet\" href=\"${uppath}_assets/css/bootstrap-theme.min.css\">"
+  echo "<link rel=\"stylesheet\" href=\"${uppath}_assets//highlight-default.css\">"
+  echo "<script src=\"${uppath}_assets/js/jquery-3.1.1.min.js\" defer=\"defer\"></script>"
+  echo "<script src=\"${uppath}_assets/js/bootstrap.min.js\" defer=\"defer\"></script>"
+  echo "<script src=\"${uppath}_assets/js/highlight.min.js\" defer=\"defer\"></script>"
+  echo "<script src=\"${uppath}_assets/js/dit.js\" defer=\"defer\"></script>"
 
   echo "</head>"
   echo "<body>"
   echo "<h1>${title}</h1>"
 
-  if [ -n "$1" ]; then
-    echo "<a href=\"../\">&lt;</a>"
-    echo "<a href=\"../commit/\">Log</a>"
-    echo "<a href=\"../branch/\">Branches</a>"
-    echo "<a href=\"../tag/\">Tag</a>"
-    echo "<a href=\"../file/\">Files</a>"
+  uppath=$(for i in $(seq $((depth-1))); do echo "../";done)
+  if [[ -z $uppath ]]; then
+    uppath="./"
+  fi
+
+  if [[ "$depth" -gt 0 ]]; then
+    echo -n "<nav>"
+    echo -n " <a href=\"../\">&lt;</a>"
+    echo -n " <a href=\"${uppath}commit/\">Log</a>"
+    echo -n " <a href=\"${uppath}branch/\">Branches</a>"
+    echo -n " <a href=\"${uppath}tag/\">Tag</a>"
+    echo -n " <a href=\"${uppath}file/\">Files</a>"
+    echo "</nav>"
     #echo "<a href=\"../graph.html\">Graph</a>"
+
     if   [ -n "$site_clone_url" ]; then
-      echo "<code>git clone $site_clone_url/$REPO_NAME.git</code>"
+      echo "<aside><code>git clone $site_clone_url/$REPO_NAME.git</code></aside>"
     fi
   fi
 
@@ -45,7 +63,7 @@ function html_header() {
 
 function html_footer() {
 
-  echo "</body></html></pre>"
+  echo "</pre></body></html>"
 }
 
 
@@ -57,31 +75,31 @@ for dir in "commit" "branch" "tag" "file" "raw"; do
 done
 
 
-( html_header
+( html_header "$REPO_NAME" 1
   echo "$REPO_NAME"
   echo "$repo_name $repo_description"
   echo
   echo "Last Commit:"
-  git log -1 --pretty=format:"%ad %an%x09<cite>%s</cite>" --date=rfc
+  git log -1 --pretty=format:"%ad %an%x09<cite>%s</cite>" --date=rfc | tr -d '\n'
   echo "<hr>"
 
   echo "<a href=\"./commit/\">"
-  git log --oneline | wc -l
+  git log --oneline | wc -l | tr -d '\n'
   echo " Commits"
   echo "</a>"
 
   echo "<a href=\"./tag/\">"
-  git tag | wc -l
+  git tag | wc -l | tr -d '\n'
   echo " Tags"
   echo "</a>"
 
   echo "<a href=\"./branch/\">"
-  git branch | wc -l
+  git branch | wc -l | tr -d '\n'
   echo " Branches"
   echo "</a>"
 
   echo "<a href=\"./file/\">"
-  git ls-files | wc -l
+  git ls-files | wc -l | tr -d '\n'
   echo " Files"
   echo "</a>"
 
@@ -90,7 +108,7 @@ done
   html_footer ) > $site_dir/$REPO_NAME/index.html
 
 echo "Creating commit history"
-( html_header "Log"
+( html_header "Log" 2
 
   git log --pretty=format:"%H%x09%ad%x09%an%x09%s" --date=rfc | while read line; do
     IFS=$'\t'; logline=($line); unset IFS;
@@ -106,30 +124,30 @@ git archive --format tar.gz --output=$site_dir/$REPO_NAME/$REPO_NAME-latest.tar.
 #  html_footer ) > $site_dir/$REPO_NAME/graph.html
 
 git log --pretty=%H | while read hash; do
-( html_header "Commit"
+( html_header "Commit" 2
   git log -1 $hash --stat
   html_footer ) > $site_dir/$REPO_NAME/commit/$hash.html;
 done
 
 echo "Creating branches"
-( html_header "Branches"
+( html_header "Branches" 2
   git branch --format='%(refname:short)'| while read line ; do echo "<a href=\"./$line.html\">$line</a>"; done
   html_footer ) > $site_dir/$REPO_NAME/branch/index.html;
 
 
 git branch --format='%(refname:short)'| while read ref; do
-( html_header "Branch $ref"
+( html_header "Branch $ref" 2
   git ls-tree -r $ref --name-only
   html_footer ) > $site_dir/$REPO_NAME/branch/$ref.html;
 done
 
 echo "Creating tags"
-( html_header "Tags"
+( html_header "Tags" 2
   git tag| while read line ; do echo "<a href=\"./$line.html\">$line</a>"; done
   html_footer ) > $site_dir/$REPO_NAME/tag/index.html;
 
 git tag | while read ref; do
-( html_header "Tag $ref"
+( html_header "Tag $ref" 2
   git ls-tree -r $ref --name-only
   html_footer ) > $site_dir/$REPO_NAME/tag/$ref.html;
 done
@@ -137,7 +155,7 @@ done
 git archive HEAD | tar -x -C $site_dir/$REPO_NAME/raw
 
 echo "Creating file information"
-( html_header "Files";
+( html_header "Files" 2;
   git ls-tree -r HEAD --name-only | while read line ; do
     hash=`git hash-object $line`;
     # experiment for tree
@@ -149,7 +167,7 @@ echo "Creating file information"
 
 git ls-tree -r HEAD --name-only | while read f; do
 hash=`git hash-object $f`
-( html_header "File $f";
+( html_header "File $f" 2;
   echo -n "Last commit: "
   git log -1 --oneline --pretty=format:"%ad%x09%an%x09%s" -- $f
   echo "<hr>"
@@ -181,12 +199,17 @@ done
 
 
 # Copy assets like CSS,JS,...
-cp -r $DIT_DIR/assets/* $site_dir/$REPO_NAME
+
+if   [ ! -d $site_dir/_assets ]; then
+  mkdir -v $site_dir/_assets
+fi
+
+cp -r $DIT_DIR/assets/* $site_dir/_assets/
 
 # Creating Index
 if   ( is_on $site_index_create ); then
   echo "Creating index in $site_dir"
-  ( html_header
+  ( html_header "$site_index_title" 0
   ( cd $site_dir; find . -maxdepth 1 -type d -printf '<a href="./%P">%P</a>\n' )
   html_footer ) > $site_dir/index.html
 fi
