@@ -1,6 +1,5 @@
 #!/bin/bash
 
-TMPFILE=$(mktemp)
 DIT_DIR="$(dirname $0)/../"
 MODULES_DIR="$(dirname $0)/modules"
 STATUS="SUCCESS"
@@ -20,6 +19,12 @@ for configfile in /etc/.config/dit $HOME/.config/dit; do
     echo "Read config from $configfile" >> $TMPFILE
   fi
 done
+
+if   is_on $notify; then
+  TMPFILE=$(mktemp)
+else
+  TMPFILE=/dev/stdout
+fi
 
 # if git commits are present
 if   [ $(git rev-list --count --all) != "0" ]; then
@@ -64,7 +69,6 @@ for module in $MODULES_DIR/*; do
   modulename="${filename%.*}"
 
   echo >> $TMPFILE
-  echo "--- Module $modulename ---"
   echo "--- Module $modulename ---" >> $TMPFILE
   if   is_on ${!modulename}; then
     source $module 2>> $TMPFILE >> $TMPFILE
@@ -90,10 +94,13 @@ echo "Finished at: $(date -R)" >> $TMPFILE
 echo "Powered by DIT $(dirname $0)" >> $TMPFILE
 echo "----------------------------------------------------------------------------" >> $TMPFILE
 
-notify
-if [ $? -ne 0 ]; then
-    echo "Notify FAILED" 1>&2
-    exit 4
+if   is_on $notify; then
+  notify
+  if [ $? -ne 0 ]; then
+      echo "Notify FAILED" 1>&2
+      exit 4
+  fi
+
+  rm $TMPFILE
 fi
 
-rm $TMPFILE

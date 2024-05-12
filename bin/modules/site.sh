@@ -13,7 +13,19 @@ function html_header() {
   else
     title=$site_index_title
   fi
-  echo "<html><title>${title}</title><body><h1>${title}</h1>"
+  echo "<html><head>"
+  echo "<title>${title}</title>"
+  echo "<link rel=\"stylesheet\" href=\"../css/bootstrap.min.css\">"
+  echo "<link rel=\"stylesheet\" href=\"../css/bootstrap-theme.min.css\">"
+  echo "<link rel=\"stylesheet\" href=\"../css/highlight-default.css\">"
+  echo "<script src=\"../js/jquery-3.1.1.min.js\" defer=\"defer\"></script>"
+  echo "<script src=\"../js/bootstrap.min.js\" defer=\"defer\"></script>"
+  echo "<script src=\"../js/highlight.min.js\" defer=\"defer\"></script>"
+  echo "<script src=\"../js/dit.js\" defer=\"defer\"></script>"
+
+  echo "</head>"
+  echo "<body>"
+  echo "<h1>${title}</h1>"
 
   if [ -n "$1" ]; then
     echo "<a href=\"../\">&lt;</a>"
@@ -77,7 +89,7 @@ done
   echo "<a href=\"./$REPO_NAME-latest.tar.gz\">Download</a>"
   html_footer ) > $site_dir/$REPO_NAME/index.html
 
-
+echo "Creating commit history"
 ( html_header "Log"
 
   git log --pretty=format:"%H%x09%ad%x09%an%x09%s" --date=rfc | while read line; do
@@ -99,9 +111,11 @@ git log --pretty=%H | while read hash; do
   html_footer ) > $site_dir/$REPO_NAME/commit/$hash.html;
 done
 
+echo "Creating branches"
 ( html_header "Branches"
   git branch --format='%(refname:short)'| while read line ; do echo "<a href=\"./$line.html\">$line</a>"; done
   html_footer ) > $site_dir/$REPO_NAME/branch/index.html;
+
 
 git branch --format='%(refname:short)'| while read ref; do
 ( html_header "Branch $ref"
@@ -109,6 +123,7 @@ git branch --format='%(refname:short)'| while read ref; do
   html_footer ) > $site_dir/$REPO_NAME/branch/$ref.html;
 done
 
+echo "Creating tags"
 ( html_header "Tags"
   git tag| while read line ; do echo "<a href=\"./$line.html\">$line</a>"; done
   html_footer ) > $site_dir/$REPO_NAME/tag/index.html;
@@ -121,6 +136,7 @@ done
 
 git archive HEAD | tar -x -C $site_dir/$REPO_NAME/raw
 
+echo "Creating file information"
 ( html_header "Files";
   git ls-tree -r HEAD --name-only | while read line ; do
     hash=`git hash-object $line`;
@@ -141,13 +157,14 @@ hash=`git hash-object $f`
   if   [ "$type" == "image" ]; then
     echo "<img src=\"../raw/$f\" />"
   elif   [ "$type" == "text" ]; then
-    echo "<code class="highlight source">"
-    # output and HTML escaping
-    num=0;
-    cat $site_dir/$REPO_NAME/raw/$f | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' | while read line; do
-      ((++num))
-      printf '%0.s ' $(seq 1 $((6-${#num}))) # right-align for the line number
-      echo "<a id=\"$num\" href=\"#$num\">$num</a> $line"
+    extension="${f##*.}"
+    echo "<code class=\"source\" data-language=\"$extension\">"
+    # output with line numbers and HTML escaping
+    num=0; # line number
+    cat $site_dir/$REPO_NAME/raw/$f | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' | while IFS= read -r line  || [ -n "$line" ]; do
+      ((++num)) # increase line number
+      printf '%0.s ' $(seq 1 $((6-${#num}))) # right-align the line number
+      echo "<a class=\"line\" id=\"$num\" href=\"#$num\">$num</a> $line"
     done
     echo "</code>"
   else
