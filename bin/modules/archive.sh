@@ -52,7 +52,7 @@ for tag in `git tag`; do
 done
 
 (
-  echo "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /></head><body><pre>";
+  echo "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /></head><body><pre>";
   for f in $files; do
     filenam="$(basename $f)"
     echo "<a href=\"./$filenam\">$filenam</a>";
@@ -61,7 +61,7 @@ done
 ) > $archive_dir/$REPO_NAME/index.html
 
 (
-  echo "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /></head><body><pre>";
+  echo "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /></head><body><pre>";
   ( cd $archive_dir; find . -type d -printf '<a href="./%P">%P</a>\n');
   echo "</pre></body></html>"
 ) > $archive_dir/index.html

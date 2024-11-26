@@ -50,16 +50,16 @@ function notify() {
     curl --silent smtp://${notify_smtp_host} --mail-from "$notify_smtp_from" --mail-rcpt "${notify_add_receiver_mail}" \
       --header "Subject: Report for $REPO_NAME: $STATUS" \
       --header "X-Repo: $REPO_NAME" \
-      $receiver_list --upload-file $TMPFILE
+      $receiver_list --upload-file $TMPFILE 2>&1
     if [ $? -ne 0 ]; then
-        cat $TMPFILE 1>&2
         echo "Sending the mail via curl FAILED" 1>&2
+        cat $TMPFILE 1>&2   # Fallback: Std-Out
         return 4
     fi
   fi
 
   if   is_on $notify_stdout; then
-    echo "output:"
+    echo "Output:"
     cat $TMPFILE
   fi
 }

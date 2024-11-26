@@ -6,6 +6,10 @@ if   [ ! -d $site_dir ]; then
     return 4
 fi
 
+# Fallback values for repo name and description.
+if   [ -z $repo_name        ]; then repo_name=$REPO_NAME; fi
+if   [ -z $repo_description ]; then repo_description="" ; fi
+
 function html_header() {
 
   if [ -n "$1" ]; then
@@ -69,7 +73,7 @@ function html_footer() {
 
   if   [[ "$1" != "0" ]]; then
     echo "</pre><footer class=\"footer\">
-            <div class=\"content has-text-centered\"><p><strong>$REPO_NAME</strong> $repo_description</p>"
+            <div class=\"content has-text-centered\"><p><strong>$repo_name</strong> $repo_description</p>"
               if   [ -n "$site_clone_url" ]; then
                 echo "<p><code>git clone $site_clone_url/$REPO_NAME.git</code></p>"
               fi
@@ -171,9 +175,9 @@ echo "Creating tags"
 
 git tag | while read ref; do
   git archive --format tar.gz --output=$site_dir/$REPO_NAME/tag/$REPO_NAME-$ref.tar.gz $ref
+( html_header "Tag <code>$ref</code>" 2
   echo "<a href=\"./$REPO_NAME-$ref.tar.gz\">Download Tag $ref</a>"
   echo
-( html_header "Tag <code>$ref</code>" 2
   git ls-tree -r $ref --name-only
   html_footer ) > $site_dir/$REPO_NAME/tag/$ref.html;
 done

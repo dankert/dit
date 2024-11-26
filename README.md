@@ -15,5 +15,11 @@ Install a global GIT hook
 
 ## Documentation
 
+Every project may contain a file named `.dit.yml`, which should have values like:
+```
+name: "your project name"
+description: "a brief description of your project"
+email: "yourmail@example.com"
 
-
+public: true
+```
