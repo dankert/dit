@@ -25,11 +25,11 @@ if [ $? -ne 0 ]; then
     return 4
 fi
 
+tags=()
+tags+=("latest")
 outfile="$archive_dir/$REPO_NAME/$REPO_NAME-latest.tar.gz"
 git archive --format tar.gz --output=$outfile HEAD
 
-files=()
-files+=($outfile)
 
 if [ $? -ne 0 ]; then
     echo "archive FAILED"
@@ -40,7 +40,7 @@ echo "Searching for git tags..."
 for tag in `git tag`; do
   echo "... found tag $tag"
   archive_file=$archive_dir/$REPO_NAME/$REPO_NAME-$tag.tar.gz
-  files+=($archive_file)
+  tags+=($tag)
   if   [ ! -f $archive_file ]; then
     git archive --format tar.gz --output=$archive_file $tag
     if [ $? -ne 0 ]; then
@@ -52,10 +52,12 @@ for tag in `git tag`; do
 done
 
 (
-  echo "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /></head><body><pre>";
-  for f in $files; do
-    filenam="$(basename $f)"
-    echo "<a href=\"./$filenam\">$filenam</a>";
+  echo "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /><title>Download - $repo_name</title></head><body>";
+  echo "<h1>$repo_name</h1>"
+  echo "<p>$repo_description</p>"
+  echo "<pre>"
+  for t in "${tags[@]}"; do
+    echo "<a href=\"./${REPO_NAME}-$t.tar.gz\">$t</a>";
   done
   echo "</pre></body></html>"
 ) > $archive_dir/$REPO_NAME/index.html
@@ -66,5 +68,7 @@ done
   echo "</pre></body></html>"
 ) > $archive_dir/index.html
 
-echo "Syncing to $archive_ssh_host ..."
-rsync -av -e ssh $archive_dir/  $archive_ssh_user@$archive_ssh_host:$archive_ssh_path
+if   [ -n "$archive_ssh_host" ]; then
+  echo "Syncing to $archive_ssh_host ..."
+  rsync -av -e ssh $archive_dir/  $archive_ssh_user@$archive_ssh_host:$archive_ssh_path
+fi
