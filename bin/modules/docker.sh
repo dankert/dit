@@ -15,7 +15,6 @@ function build() {
     return
   fi
   tagname="$REPO_NAME:$1"
-  tagname_remote="$docker_owner/$tagname"
   echo
   echo "--- Building Docker image $tagname ---"
   docker build $WORK_DIR --tag $tagname
@@ -28,6 +27,7 @@ function build() {
 
   echo
   echo ">>>>>>>>> Pushing $tagname to remote"
+  tagname_remote="$dockerhub_owner/$tagname"
   docker image tag $tagname $tagname_remote
 
   docker push $tagname_remote
@@ -43,18 +43,17 @@ WORK_DIR="$(mktemp -d)"
 echo "Cloning GIT to $WORK_DIR ..."
 git clone . $WORK_DIR
 
-build latest >> $TMPFILE
+build latest
 
 echo "Searching for GIT tags ..."
 for tag in `git -C $WORK_DIR tag`; do
   echo "... found tag $tag"
 
-  ALREADY_THERE=`docker manifest inspect $IMGNAME:$IMGTAG > /dev/null ; echo $?`
-  if   [ $ALREADY_THERE ]; then
-    git -C $WORK_DIR checkout tags/$tag
-    build $tag >> $TMPFILE
+  if   [[ $(docker images -q $REPO_NAME:$tag | wc -c) -ne 0 ]]; then
+    echo "Image $REPO_NAME:$tag is already there"
   else
-    echo "... tag $tag is already there"
+    git -C $WORK_DIR checkout tags/$tag
+    build $tag
   fi
 done
 

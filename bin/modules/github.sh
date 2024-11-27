@@ -19,15 +19,15 @@ if [ $? -ne 1 ]; then
 fi
 
 # Push to remote repos
-git push --all  git@github.com:${github_owner}/${REPO_NAME}
+git push -vv --all  git@github.com:${github_owner}/${REPO_NAME}
 if [ $? -ne 0 ]; then
-    echo "Push to github failed"
+    echo "Push to github failed due to exitcode $?"
     return 4
 fi
 
-git push --tags git@github.com:${github_owner}/${REPO_NAME}
-if [ $? -ne 1 ]; then
-    echo "Push to github failed"
+git push -vv --tags git@github.com:${github_owner}/${REPO_NAME}
+if [ $? -ne 0 ]; then
+    echo "Push to github failed due to exitcode $?"
     return 4
 fi
 

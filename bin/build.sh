@@ -3,6 +3,10 @@
 REPO=${PWD}
 REPO_NAME="$(basename $REPO)"
 
+# Fallback values for repo name and description.
+if   [ -z $repo_name        ]; then repo_name=$REPO_NAME; fi
+if   [ -z $repo_description ]; then repo_description="" ; fi
+
 echo
 echo "----------------------------------------------------------------------------" 
 echo "BUILDING $REPO_NAME"

@@ -23,7 +23,7 @@ else
 fi
 
 if   [ -d ./.git ]; then
-    source ${DIT_DIR}/bin/build.sh >> $TMPFILE
+    source ${DIT_DIR}/bin/build.sh >> $TMPFILE 2>&1
 else
     echo "No .git directory found, seems like this is no GIT repo. Try to use 'git init' to create a GIT repository."
     exit 4

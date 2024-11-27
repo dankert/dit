@@ -6,10 +6,6 @@ if   [ ! -d $site_dir ]; then
     return 4
 fi
 
-# Fallback values for repo name and description.
-if   [ -z $repo_name        ]; then repo_name=$REPO_NAME; fi
-if   [ -z $repo_description ]; then repo_description="" ; fi
-
 function html_header() {
 
   if [ -n "$1" ]; then
