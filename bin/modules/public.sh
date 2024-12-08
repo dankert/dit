@@ -6,13 +6,8 @@ if   [ ! -d $public_dir ]; then
     return 4
 fi
 
-if   [ ! -d $public_dir/$REPO_NAME ]; then
-  git clone . $public_dir/$REPO_NAME
-else
-  git push --all $public_dir/$REPO_NAME
-fi
-( cd $public_dir/$REPO_NAME; git reset --hard; git checkout HEAD )
-
+mkdir -p $public_dir/$REPO_NAME
+git archive HEAD | tar -x -C $public_dir/$REPO_NAME
 
 
 # Creating Index
