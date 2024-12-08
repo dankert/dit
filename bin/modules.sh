@@ -14,7 +14,8 @@ for module in $MODULES_DIR/*; do
   echo "Module $modulename"
   echo "----------------------------------------------------------------------------"
   if   is_on "${!modulename}"; then
-    if   is_on "repo_modules_${!modulename}"; then
+    repomodulename="repo_modules_${modulename}"
+    if   is_on "${!repomodulename}"; then
       source $module 2
       if [ $? -ne 0 ]; then
           echo "*** Module $modulename FAILED ***"

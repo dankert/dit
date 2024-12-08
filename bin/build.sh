@@ -20,6 +20,8 @@ echo "--------------------------------------------------------------------------
 echo
 echo "--- Prepare ---" 
 
+if   is_on ${debug}; then echo "Debug is enabled"; fi
+
 # if git commits are present
 if   [ $(git rev-list --count --all) != "0" ]; then
   LAST_COMMIT_USER=$(git log -n 1 --pretty=format:%an)
