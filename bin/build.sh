@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPO=${PWD}
-REPO_NAME="$(basename $REPO)"
+REPO_NAME="$(basename $REPO| cut -d'.' -f1)"
 
 # Fallback values for repo name and description.
 if   [ -z $repo_project_name        ]; then repo_project_name=$REPO_NAME; fi
