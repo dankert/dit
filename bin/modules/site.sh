@@ -122,7 +122,7 @@ git archive --format tar.gz --output=$site_dir/$REPO_NAME/$REPO_NAME-latest.tar.
   echo "</a>"
 
   echo -n "<a href=\"./file/\">"
-  git ls-files | wc -l | tr -d '\n'
+  git ls-tree -r HEAD --name-only | wc -l | tr -d '\n'
   echo -n " Files"
   echo "</a>"
 
