@@ -4,8 +4,10 @@ REPO=${PWD}
 REPO_NAME="$(basename $REPO)"
 
 # Fallback values for repo name and description.
-if   [ -z $repo_name        ]; then repo_name=$REPO_NAME; fi
-if   [ -z $repo_description ]; then repo_description="" ; fi
+if   [ -z $repo_project_name        ]; then repo_project_name=$REPO_NAME; fi
+if   [ -z $repo_project_description ]; then repo_project_description="" ; fi
+if   [ -z $repo_project_author      ]; then repo_project_author=$(git log -1 --pretty=format:'%an') ; fi
+if   [ -z $repo_project_email       ]; then repo_project_author=$(git log -1 --pretty=format:'%ae') ; fi
 
 echo
 echo "----------------------------------------------------------------------------" 
@@ -33,9 +35,9 @@ USER_EMAIL=$(git config --get user.email)
 #  echo parse_yaml $project_config_file;
 #end;
 PRJCONFFILE=$(mktemp)
-git archive HEAD .dit.yml|tar xO > $PRJCONFFILE
+git archive HEAD ${project_config_file}|tar xO > $PRJCONFFILE
 if  [ $? -eq 0 ]; then
-  echo "reading per project config from '$PRJCONFFILE'"
+  echo "reading per project config '${project_config_file}' from '$PRJCONFFILE'"
 
   if   is_on ${debug}; then
     echo $PRJCONFFILE
@@ -46,6 +48,7 @@ if  [ $? -eq 0 ]; then
 else
   echo "No file $project_config_file found - ignoring..."
 fi
+rm $PRJCONFFILE
 
 if   is_on ${debug}; then
   set | grep -i "^repo"

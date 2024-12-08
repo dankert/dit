@@ -40,7 +40,7 @@ function build() {
 
 WORK_DIR="$(mktemp -d)"
 
-echo "Cloning GIT to $WORK_DIR ..."
+echo "Cloning GIT to temporary directory $WORK_DIR ..."
 git clone . $WORK_DIR
 
 build latest
@@ -57,4 +57,5 @@ for tag in `git -C $WORK_DIR tag`; do
   fi
 done
 
+echo "Deleting $WORK_DIR"
 rm -rf $WORK_DIR

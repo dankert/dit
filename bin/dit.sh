@@ -6,7 +6,7 @@ source "${DIT_DIR}/bin/lib.sh"
 
 
 # reading config files
-for configfile in ${DIT_DIR}/config/config-default.sh /etc/.config/dit /etc/dit /etc/.config/dit $HOME/.config/dit; do
+for configfile in ${DIT_DIR}/config/config-default.sh /etc/.config/dit /etc/dit $HOME/.config/dit; do
   if   [ -f $configfile ]; then
     #echo "Read config from $configfile"
     source $configfile

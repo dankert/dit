@@ -1,11 +1,13 @@
-name: DIT
-description: "Deliver it! A tool for delivering software"
-email: "jan.2024+dit-repo@jandankert.de"
+project:
+  name: Deliver it
+  author: Jan Dankert
+  description: "Deliver it! A tool for delivering software"
+  email: "jan.2024+dit-repo@jandankert.de"
 
-# Modules:
-archive: on
-docker: off
-github: off
-public: true
-site: on
-sshpush: on
+modules:
+  archive: on
+  docker: off
+  github: off
+  public: true
+  site: on
+  sshpush: on

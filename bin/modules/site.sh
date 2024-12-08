@@ -69,7 +69,7 @@ function html_footer() {
 
   if   [[ "$1" != "0" ]]; then
     echo "</pre><footer class=\"footer\">
-            <div class=\"content has-text-centered\"><p><strong>$repo_name</strong> $repo_description</p>"
+            <div class=\"content has-text-centered\"><p><strong>$repo_project_name</strong> $repo_description</p>"
               if   [ -n "$site_clone_url" ]; then
                 echo "<p><code>git clone $site_clone_url/$REPO_NAME.git</code></p>"
               fi
@@ -92,7 +92,7 @@ git archive --format tar.gz --output=$site_dir/$REPO_NAME/$REPO_NAME-latest.tar.
 
 ( html_header "$REPO_NAME" 1
   echo "$REPO_NAME"
-  echo "$repo_name $repo_description"
+  echo "$repo_project_name $repo_project_description"
   echo "<hr>"
   echo
 

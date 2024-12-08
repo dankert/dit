@@ -52,9 +52,9 @@ for tag in `git tag`; do
 done
 
 (
-  echo "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /><title>Download - $repo_name</title></head><body>";
-  echo "<h1>$repo_name</h1>"
-  echo "<p>$repo_description</p>"
+  echo "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=2\" /><title>Download - $repo_project_name</title></head><body>";
+  echo "<h1>$repo_project_name</h1>"
+  echo "<p>$repo_project_description</p>"
   echo "<pre>"
   for t in "${tags[@]}"; do
     echo "<a href=\"./${REPO_NAME}-$t.tar.gz\">$t</a>";
