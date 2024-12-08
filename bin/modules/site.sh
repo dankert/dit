@@ -18,7 +18,7 @@ function html_header() {
     depth=2
   fi
 
-  uppath=$(for i in $(seq $depth); do echo "../";done)
+  uppath=$(for i in $(seq $depth); do echo -n "../";done)
   if [[ -z $uppath ]]; then
     uppath="./"
   fi
@@ -37,7 +37,7 @@ function html_header() {
   echo "</head>"
   echo "<body>"
 
-  uppath=$(for i in $(seq $((depth-1))); do echo "../";done)
+  uppath=$(for i in $(seq $((depth-1))); do echo -n "../";done)
   if [[ -z $uppath ]]; then
     uppath="./"
   fi
@@ -51,7 +51,7 @@ function html_header() {
   if [[ "$depth" -gt 0 ]]; then
 
     echo -n "<nav class=\"navbar\" role=\"navigation\" aria-label=\"main navigation\"><div class=\"navbar-menu\">"
-    echo -n "<a class=\"navbar-item\" href=\"../\">&lt;</a>"
+    echo -n "<a class=\"navbar-item\" href=\"${uppath}../\">&lt;</a>"
     echo -n "<a class=\"navbar-item\" href=\"${uppath}commit/\">Log</a>"
     echo -n "<a class=\"navbar-item\" href=\"${uppath}branch/\">Branches</a>"
     echo -n "<a class=\"navbar-item\" href=\"${uppath}tag/\">Tag</a>"
@@ -178,23 +178,26 @@ git tag | while read ref; do
   html_footer ) > $site_dir/$REPO_NAME/tag/$ref.html;
 done
 
-echo "Creating file information"
+echo "Creating file list"
 ( html_header "Files" 2;
   echo "All files in HEAD:"
   git ls-tree -r HEAD --name-only | while read line ; do
-    hash=`git hash-object $line`;
     # experiment for tree
     #out=`echo $line | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"`
     out=$line
-    echo "<a href=\"./$hash.html\">$out</a>"
+    echo "<a href=\"./content/$line.html\">$out</a>"
   done
   echo "<hr>"
   echo "<a href=\"../$REPO_NAME-latest.tar.gz\">Download</a>"
   html_footer )  > $site_dir/$REPO_NAME/file/index.html;
 
+echo "Creating file information"
 git ls-tree -r HEAD --name-only | while read f; do
-hash=`git hash-object $f`
-( html_header "File <code>$f</code>" 2;
+
+slashes=${f//[^/]}
+mkdir -p "$site_dir/$REPO_NAME/file/content/${f%/*}"
+
+( html_header "File <code>$f</code>" "$(expr ${#slashes} + 2)"
   echo -n "Last commit: "
   git log -1 --oneline --pretty=format:"%ad%x09%an%x09%s" -- $f
   echo "<hr>"
@@ -221,9 +224,9 @@ hash=`git hash-object $f`
   echo "<hr>"
   echo "History"
   git log --oneline --pretty=format:"%ad%x09%an%x09%s" --date=rfc -- $f
-  html_footer ) > $site_dir/$REPO_NAME/file/$hash.html;
+  html_footer ) > $site_dir/$REPO_NAME/file/content/$f.html;
 done
-
+echo "done"
 
 # Copy assets like CSS,JS,...
 
