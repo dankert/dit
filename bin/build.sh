@@ -33,7 +33,7 @@ USER_EMAIL=$(git config --get user.email)
 #  echo parse_yaml $project_config_file;
 #end;
 PRJCONFFILE=$(mktemp)
-git archive HEAD .dit.yml|tar x0 > $PRJCONFFILE
+git archive HEAD .dit.yml|tar xO > $PRJCONFFILE
 if  [ $? -eq 0 ]; then
   echo "reading per project config from '$PRJCONFFILE'"
 
