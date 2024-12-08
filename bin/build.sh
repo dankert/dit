@@ -30,14 +30,19 @@ USER_NAME=$(git config --get user.name)
 USER_EMAIL=$(git config --get user.email)
 
 
-#if is_on $debug; then
 #  echo parse_yaml $project_config_file;
 #end;
+PRJCONFFILE=$(mktemp)
+git archive HEAD .dit.yml|tar x0 > $PRJCONFFILE
+if  [ $? -eq 0 ]; then
+  echo "reading per project config from '$PRJCONFFILE'"
 
-if  [ -f "$project_config_file" ]; then
-  echo "reading per project config from '$project_config_file'"
-  #echo $(parse_yaml $project_config_file "repo_")
-  #eval $(parse_yaml $project_config_file "repo_")
+  if   is_on ${debug}; then
+    echo $PRJCONFFILE
+    echo ""
+    echo $(parse_yaml $PRJCONFFILE "repo_")
+  fi;
+  eval $(parse_yaml $PRJCONFFILE "repo_")
 else
   echo "No file $project_config_file found - ignoring..."
 fi
