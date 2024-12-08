@@ -2,5 +2,5 @@
 # GIT post-receive hook
 
 DIR=$(dirname "$0")
-echo "Starting DIT job"
+echo "Starting DIT job for $(pwd)"
 echo "${DIR}/../bin/dit.sh" | at now # run async
