@@ -22,12 +22,15 @@ else
   TMPFILE=/dev/stdout
 fi
 
-if   [ -d ./.git ]; then
-    source ${DIT_DIR}/bin/build.sh >> $TMPFILE 2>&1
-else
-    echo "No .git directory found, seems like this is no GIT repo. Try to use 'git init' to create a GIT repository."
+git log HEAD..HEAD
+if [ $? -ne 0 ]; then
+    echo "Error: No GIT repository found in $(pwd)"
+    echo "Seems like this is no GIT repo."
+    echo "Try to use 'git init' to create a GIT repository here."
     exit 4
 fi
+
+source ${DIT_DIR}/bin/build.sh >> $TMPFILE 2>&1
 
 if   is_on $notify; then
   notify
