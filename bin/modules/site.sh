@@ -194,8 +194,10 @@ echo "Creating file list"
 echo "Creating file information"
 git ls-tree -r HEAD --name-only | while read f; do
 
+filedirname=$(dirname $f )
+mkdir -p "$site_dir/$REPO_NAME/file/content/${filedirname}"
+
 slashes=${f//[^/]}
-mkdir -p "$site_dir/$REPO_NAME/file/content/${f%/*}"
 
 ( html_header "File <code>$f</code>" "$(expr ${#slashes} + 2)"
   echo -n "Last commit: "
@@ -224,7 +226,7 @@ mkdir -p "$site_dir/$REPO_NAME/file/content/${f%/*}"
   echo "<hr>"
   echo "History"
   git log --oneline --pretty=format:"%ad%x09%an%x09%s" --date=rfc -- $f
-  html_footer ) > $site_dir/$REPO_NAME/file/content/$f.html;
+  html_footer ) > $site_dir/$REPO_NAME/file/content/${f}.html;
 done
 echo "done"
 
