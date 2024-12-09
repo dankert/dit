@@ -16,8 +16,10 @@ for module in $MODULES_DIR/*; do
   if   is_on "${!modulename}"; then
     repomodulename="repo_modules_${modulename}"
     if   is_on "${!repomodulename}"; then
+      echo "Started at: $(date -R)"
       source $module 2
       if [ $? -ne 0 ]; then
+          echo
           echo "*** Module $modulename FAILED ***"
           return 4
       fi
