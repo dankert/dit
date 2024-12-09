@@ -10,7 +10,7 @@ function build() {
     return
   fi
 
-  if   [ ! -f ./Dockerfile ]; then
+  if   [ ! -f ${WORK_DIR}/Dockerfile ]; then
     echo "No Dockerfile for tag $TAG, continueing ..."
     return
   fi
@@ -25,16 +25,20 @@ function build() {
       return 4
   fi
 
-  echo
-  echo ">>>>>>>>> Pushing $tagname to remote"
-  tagname_remote="$dockerhub_owner/$tagname"
-  docker image tag $tagname $tagname_remote
+  if   [ -n "$dockerhub_owner" ]; then
+    echo
+    echo ">>>>>>>>> Pushing $tagname to remote"
+    tagname_remote="$dockerhub_owner/$tagname"
+    docker image tag $tagname $tagname_remote
 
-  docker push $tagname_remote
+    docker push $tagname_remote
 
-  if [ $? -ne 0 ]; then
-      echo "Docker push FAILED"
-      return 4
+    if [ $? -ne 0 ]; then
+        echo "Error: Docker push FAILED"
+        return 4
+    fi
+  else
+    echo "Info: No dockerhub user configured, so not pushing to dockerhub"
   fi
 }
 
@@ -46,14 +50,20 @@ git clone . $WORK_DIR
 build latest
 
 echo "Searching for GIT tags ..."
-for tag in `git -C $WORK_DIR tag`; do
+git -C $WORK_DIR tag
+for tag in $(git -C $WORK_DIR tag); do
   echo "... found tag $tag"
 
   if   [[ $(docker images -q $REPO_NAME:$tag | wc -c) -ne 0 ]]; then
-    echo "Image $REPO_NAME:$tag is already there"
+    echo "Info: Image $REPO_NAME:$tag found"
   else
+    echo "Info: Image $REPO_NAME:$tag not found in local registry"
     git -C $WORK_DIR checkout tags/$tag
     build $tag
+    if   [ $? -ne 0 ]; then
+      echo "Error: Image could not be build."
+      return 4;
+    fi
   fi
 done
 
