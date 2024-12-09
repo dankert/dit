@@ -205,9 +205,9 @@ git ls-tree -r HEAD --name-only | while read f; do
 filedirname=$(dirname $f )
 mkdir -p "$site_dir/$REPO_NAME/file/content/${filedirname}"
 
-slashes=${f//[^/]}
+slashes=${f//[^\/]}
 
-( html_header "File <code>$f</code>" "$(expr ${#slashes} + 2)"
+( html_header "File <code>$f</code>" "$(expr ${#slashes} + 3)"
   echo -n "Last commit: "
   git log -1 --oneline --pretty=format:"%ad%x09%an%x09%s" -- $f
   echo "<hr>"
