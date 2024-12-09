@@ -37,11 +37,6 @@ function html_header() {
   echo "</head>"
   echo "<body>"
 
-  uppath=$(for i in $(seq $((depth-1))); do echo -n "../";done)
-  if [[ -z $uppath ]]; then
-    uppath="./"
-  fi
-
   echo "<section class=\"hero\">
          <div class=\"hero-body\">
            <p class=\"title\">$title</p>
@@ -51,11 +46,11 @@ function html_header() {
   if [[ "$depth" -gt 0 ]]; then
 
     echo -n "<nav class=\"navbar\" role=\"navigation\" aria-label=\"main navigation\"><div class=\"navbar-menu\">"
-    echo -n "<a class=\"navbar-item\" href=\"${uppath}../\">&lt;</a>"
-    echo -n "<a class=\"navbar-item\" href=\"${uppath}commit/\">Log</a>"
-    echo -n "<a class=\"navbar-item\" href=\"${uppath}branch/\">Branches</a>"
-    echo -n "<a class=\"navbar-item\" href=\"${uppath}tag/\">Tag</a>"
-    echo -n "<a class=\"navbar-item\" href=\"${uppath}file/\">Files</a>"
+    echo -n "<a class=\"navbar-item\" href=\"${uppath}\">&lt;</a>"
+    echo -n "<a class=\"navbar-item\" href=\"${uppath}${REPO_NAME}/commit/\">Log</a>"
+    echo -n "<a class=\"navbar-item\" href=\"${uppath}${REPO_NAME}/branch/\">Branches</a>"
+    echo -n "<a class=\"navbar-item\" href=\"${uppath}${REPO_NAME}/tag/\">Tag</a>"
+    echo -n "<a class=\"navbar-item\" href=\"${uppath}${REPO_NAME}/file/\">Files</a>"
     echo "</div></nav>"
     #echo "<a href=\"../graph.html\">Graph</a>"
 
@@ -206,14 +201,20 @@ filedirname=$(dirname $f )
 mkdir -p "$site_dir/$REPO_NAME/file/content/${filedirname}"
 
 slashes=${f//[^\/]}
-
-( html_header "File <code>$f</code>" "$(expr ${#slashes} + 3)"
+depth=$(expr ${#slashes} + 3)
+( html_header "File <code>$f</code>" "${depth}"
   echo -n "Last commit: "
   git log -1 --oneline --pretty=format:"%ad%x09%an%x09%s" -- $f
   echo "<hr>"
+
+  uppath=$(for i in $(seq $depth); do echo -n "../";done)
+  if [[ -z $uppath ]]; then
+    uppath="./"
+  fi
+
   type=$(file -b --mime-type $site_dir/$REPO_NAME/raw/$f| cut -d/ -f1)
   if   [ "$type" == "image" ]; then
-    echo "<img src=\"../raw/$f\" />"
+    echo "<img src=\"${uppath}${REPO_NAME}/raw/$f\" />"
   elif   [ "$type" == "text" ]; then
     extension="${f##*.}"
     echo "<code class=\"source\" data-language=\"$extension\">"
@@ -230,7 +231,7 @@ slashes=${f//[^\/]}
   fi
 
   echo "<hr>"
-  echo "<a href=\"../raw/$f\">Download <code>$f</code></a>"
+  echo "<a href=\"${uppath}${REPO_NAME}/raw/$f\">Download <code>$f</code></a>"
   echo "<hr>"
   echo "History"
   git log --oneline --pretty=format:"%ad%x09%an%x09%s" --date=rfc -- $f
