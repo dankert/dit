@@ -144,9 +144,11 @@ echo "Creating commit history"
 #  html_footer ) > $site_dir/$REPO_NAME/graph.html
 
 git log --pretty=%H | while read hash; do
-( html_header "Commit" 2
-  git log -1 $hash --stat
-  html_footer ) > $site_dir/$REPO_NAME/commit/$hash.html;
+  if [ ! -f $site_dir/$REPO_NAME/commit/$hash.html ]; then
+    ( html_header "Commit" 2
+      git log -1 $hash --stat
+      html_footer ) > $site_dir/$REPO_NAME/commit/$hash.html;
+  fi
 done
 
 echo "Creating branches"
@@ -170,12 +172,14 @@ echo "Creating tags"
   html_footer ) > $site_dir/$REPO_NAME/tag/index.html;
 
 git tag | while read ref; do
-  git archive --format tar.gz --output=$site_dir/$REPO_NAME/tag/$REPO_NAME-$ref.tar.gz $ref
-( html_header "Tag <code>$ref</code>" 2
-  echo "<a href=\"./$REPO_NAME-$ref.tar.gz\">Download Tag $ref</a>"
-  echo
-  git ls-tree -r $ref --name-only
-  html_footer ) > $site_dir/$REPO_NAME/tag/$ref.html;
+  if   [ ! -f $site_dir/$REPO_NAME/tag/$REPO_NAME-$ref.tar.gz ]; then
+    git archive --format tar.gz --output=$site_dir/$REPO_NAME/tag/$REPO_NAME-$ref.tar.gz $ref
+  ( html_header "Tag <code>$ref</code>" 2
+    echo "<a href=\"./$REPO_NAME-$ref.tar.gz\">Download Tag $ref</a>"
+    echo
+    git ls-tree -r $ref --name-only
+    html_footer ) > $site_dir/$REPO_NAME/tag/$ref.html;
+  fi
 done
 
 echo "Creating file list"
