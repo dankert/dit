@@ -250,7 +250,7 @@ cp -r $DIT_DIR/assets/* $site_dir/_assets/
 if   ( is_on $site_index_create ); then
   echo "Creating index in $site_dir"
   ( html_header "$site_index_title" 0
-  ( cd $site_dir; find . -maxdepth 1 -type d -printf '<a href="./%P">%P</a>\n' )
+  ( cd $site_dir; find . -maxdepth 1 -type d -printf '<a href="./%P">%P</a>\n'|sort )
   html_footer 0 ) > $site_dir/index.html
 fi
 
