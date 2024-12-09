@@ -42,6 +42,7 @@ for tag in `git tag`; do
   archive_file=$archive_dir/$REPO_NAME/$REPO_NAME-$tag.tar.gz
   tags+=($tag)
   if   [ ! -f $archive_file ]; then
+    echo "Creating archive file for '$tag'"
     git archive --format tar.gz --output=$archive_file $tag
     if [ $? -ne 0 ]; then
         echo "Archive FAILED"
