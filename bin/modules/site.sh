@@ -2,7 +2,7 @@
 
 # Build website for repo
 if   [ ! -d $site_dir ]; then
-    echo "Directory does not exist: $site_dir"
+    echo "Error: Directory for sites does not exist: '$site_dir'"
     return 4
 fi
 
@@ -80,6 +80,10 @@ function html_footer() {
 
 
 # create sub directories if not already there
+if   [ ! -d $site_dir/$REPO_NAME ]; then
+  mkdir -v $site_dir/$REPO_NAME
+fi
+
 for dir in "commit" "branch" "tag" "file" "raw"; do
   if   [ ! -d $site_dir/$REPO_NAME/$dir ]; then
     mkdir -v $site_dir/$REPO_NAME/$dir
