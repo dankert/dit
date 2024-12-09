@@ -25,7 +25,7 @@ fi
 
 if  [ -n "$public_sync_ssh_host" ]; then
   echo "Syncing to $public_sync_ssh_host ..."
-  rsync -a -e ssh $public_dir/ $public_sync_ssh_user@$public_sync_ssh_host:$public_sync_ssh_path 2>&1
+  rsync -a --delete -e ssh $public_dir/ $public_sync_ssh_user@$public_sync_ssh_host:$public_sync_ssh_path 2>&1
 fi
 
 

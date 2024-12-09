@@ -256,7 +256,7 @@ fi
 
 if  [ -n "$site_sync_ssh_host" ]; then
   echo "Syncing to $site_sync_ssh_host ..."
-  rsync -a -e ssh $site_dir/ $site_sync_ssh_user@$site_sync_ssh_host:$site_sync_ssh_path
+  rsync -a --delete -e ssh $site_dir/ $site_sync_ssh_user@$site_sync_ssh_host:$site_sync_ssh_path
 fi
 
 
