@@ -58,7 +58,7 @@ notify_add_receiver_mail="email@example"
 
 # Danger: do not set the name, it will be auto-configured with the repo-name
 repo_project_name=
-
+repo_project_title=
 repo_project_description=
 
 # default module settings

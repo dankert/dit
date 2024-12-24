@@ -1,5 +1,6 @@
 project:
-  name: Deliver it
+  name: DIT
+  title: Deliver it
   author: Jan Dankert
   description: "Deliver it! A tool for delivering software"
   email: "jan.2024+dit-repo@jandankert.de"
