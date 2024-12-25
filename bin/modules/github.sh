@@ -10,12 +10,12 @@ if [ $? -ne 0 ]; then
     if [ -n "$github_access_token" ]; then
       echo "GitHub-Repo will be created..."
       curl  -H "Authorization: token $github_access_token" \
-             -d "{ \"name\": \"${REPO_NAME}\" ,
-                  \"auto_init\": false ,
+             -d "{ \"name\": \"${REPO_NAME}\",
+                  \"auto_init\": false,
                   \"private\": false,
                   \"has_issues\": false,
                   \"has_wiki\": false,
-                  \"has_downloads\": false,
+                  \"has_downloads\": false
                 }" https://api.github.com/user/repos
     else
       echo "Warning: No Github-token configured, so it is not possible to create a new repository at Github."
