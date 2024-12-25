@@ -6,12 +6,12 @@ function build() {
   TAG=$1
 
   if   [ -z "$TAG" ]; then
-    echo "No tag defined..."
+    echo "Error: No tag defined..."
     return
   fi
 
   if   [ ! -f ${WORK_DIR}/Dockerfile ]; then
-    echo "No Dockerfile for tag $TAG, continueing ..."
+    echo "Info: No Dockerfile for tag $TAG, continueing ..."
     return
   fi
   tagname="$REPO_NAME:$1"
@@ -21,7 +21,7 @@ function build() {
 
   if [ $? -ne 0 ]; then
       echo
-      echo "Docker build FAILED"
+      echo "Error: Docker build FAILED"
       return 4
   fi
 
